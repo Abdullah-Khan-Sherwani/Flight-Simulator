@@ -1,0 +1,27 @@
+<html>
+<script id="vertex-shader" type="x-shader/x-vertex">
+#version 300 es
+in  vec3 aPosition;
+void main()
+{
+    gl_Position = vec4(aPosition, 1.0); 
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+#version 300 es
+precision mediump float; 
+uniform vec4 ourColor;  
+out vec4 fColor;
+void main()
+{
+    fColor = ourColor;
+}
+</script>
+
+
+<script type="text/javascript" src="triangle1.js"></script>
+
+<canvas id="gl-canvas" width="512" height="512"> </canvas>
+
+</html>

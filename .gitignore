@@ -1,0 +1,15 @@
+# Screenshot files checked in for reference only — ignore future ones
+image.png
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Python server
+__pycache__/
+*.pyc

@@ -75,9 +75,23 @@ let patchPool, patchMap;
 let lastCx = null, lastCz = null;
 let renderMode = 2, shadeMode = 0;
 let frustum = { left:-1, right:1, bottom:-0.5625, top:0.5625, near:1, far:300 };
+let lastValidFrustum = { ...frustum };
 const STEP = 0.1;
 const keys = new Set();
 let running = true, rafId = null;
+
+function isValidFrustum(f) {
+    return f.left < f.right && f.bottom < f.top && f.near > 0.01 && f.far > f.near + 1;
+}
+
+function syncFrustum() {
+    if (isValidFrustum(frustum)) {
+        lastValidFrustum = { ...frustum };
+        return true;
+    }
+    Object.assign(frustum, lastValidFrustum);
+    return false;
+}
 
 // ── Height field ──────────────────────────────────────────────────────────────
 function hashNoise(x, z) {
@@ -343,7 +357,6 @@ const SHADE_NAMES = ['flat','smooth','Phong'];
 
 document.addEventListener('keydown', e => {
     keys.add(e.key);
-    const prev = { ...frustum };
     switch (e.key) {
         case 'v': case 'V': renderMode = (renderMode+1)%3; break;
         case 'c': case 'C':
@@ -367,9 +380,7 @@ document.addEventListener('keydown', e => {
         case '6': frustum.far = Math.min(frustum.far+20, 600); break;
         case '^': frustum.far -= 20; break;
     }
-    if (frustum.left>=frustum.right || frustum.bottom>=frustum.top ||
-        frustum.near<=0.01 || frustum.far<=frustum.near+1)
-        Object.assign(frustum, prev);
+    syncFrustum();
 });
 document.addEventListener('keyup',  e => keys.delete(e.key));
 window.addEventListener('blur', () => keys.clear());
@@ -408,6 +419,7 @@ function render(ts) {
 
     processInput(dt);
     updatePatches();
+    syncFrustum();
 
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

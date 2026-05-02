@@ -77,11 +77,16 @@ let frustum = { left:-1, right:1, bottom:-0.5625, top:0.5625, near:1, far:300 };
 const STEP = 0.1;
 const keys = new Set();
 
+function hashNoise(x, z) {
+    const s = Math.sin(x * 12.9898 + z * 78.233) * 43758.5453;
+    return (s - Math.floor(s)) * 2 - 1;
+}
+
 // Large-scale height at world position (x,z) — sine ridges give mountains + plains
 function baseHeight(wx, wz) {
-    return  Math.sin(wx * 0.07) * Math.cos(wz * 0.05) * 2.2
-          + Math.sin(wx * 0.13 + wz * 0.09) * 1.1
-          + Math.cos(wx * 0.04 - wz * 0.11) * 0.8;
+    return  Math.sin(wx * 0.18) * Math.cos(wz * 0.15) * 1.4
+          + Math.sin(wx * 0.13 + wz * 0.09) * 0.8
+          + Math.cos(wx * 0.08 - wz * 0.11) * 0.5;
 }
 
 // JS mirror of the GLSL terrainColor — used to compute per-triangle average flat color
@@ -104,7 +109,7 @@ function get_patch(xmin, xmax, zmin, zmax) {
             const idx = (iz*(N+1)+ix)*9;
             const wx  = xmin + (xmax-xmin)*(ix/N);
             const wz  = zmin + (zmax-zmin)*(iz/N);
-            const h   = baseHeight(wx, wz) + (Math.random()*2-1)*0.3;
+            const h   = baseHeight(wx, wz) + hashNoise(Math.round(wx*5), Math.round(wz*5)) * 0.4;
             vertices[idx+0] = wx;
             vertices[idx+1] = Math.max(-2, Math.min(2, h));
             vertices[idx+2] = wz;
@@ -235,7 +240,7 @@ function initGL() {
         patchPool.push({ vao, vbo, eboTri, eboLine, triCount:0, lineCount:0, cx:null, cz:null });
     }
 
-    cam = new FlightCamera({ position: glMatrix.vec3.fromValues(0, 4, 0), yaw:-90, pitch:0 });
+    cam = new FlightCamera({ position: glMatrix.vec3.fromValues(0, 3, 0), yaw:-90, pitch:0 });
 
     patchMap = new Map();
     let slot = 0;

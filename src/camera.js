@@ -59,6 +59,6 @@ class FlightCamera {
         // Advance position along the look direction at current speed
         glMatrix.vec3.scaleAndAdd(this.Position, this.Position, this.Front, this.Speed * dt);
         // Clamp altitude
-        this.Position[1] = Math.min(5.5, Math.max(3.0, this.Position[1]));
+        this.Position[1] = Math.min(3.5, Math.max(2, this.Position[1]));
     }
 }

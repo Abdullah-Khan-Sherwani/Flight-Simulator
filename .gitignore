@@ -13,3 +13,5 @@ desktop.ini
 # Python server
 __pycache__/
 *.pyc
+
+CLAUDE.md
